@@ -17,7 +17,7 @@ namespace Bb.Servers.Web.Models
                 ? "use_swagger".EnvironmentVariableIsTrue()
                 : IsDevelopment;
 
-            UseSwagger = "use_controller".EnvironmentVariableExists()
+            UseControllers = "use_controllers".EnvironmentVariableExists()
                 ? "use_controller".EnvironmentVariableIsTrue()
                 : true;
 

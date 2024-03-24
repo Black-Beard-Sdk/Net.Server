@@ -18,11 +18,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace Bb.Servers.Web
 {
 
-    public class StartupBase
+    public class ServiceRunnerStartup
     {
 
 
-        public StartupBase(IConfiguration configuration)
+        public ServiceRunnerStartup(IConfiguration configuration)
         {
             AssemblyInformations = Assembly.GetEntryAssembly().GetAssemblyInformation();
             CurrentConfiguration = configuration;
@@ -55,7 +55,7 @@ namespace Bb.Servers.Web
 
         }
 
-    
+
 
         protected virtual void ConfigureForwardedHeadersOptions(ForwardedHeadersOptions options)
         {
@@ -148,10 +148,16 @@ namespace Bb.Servers.Web
 
             ConfigureApplication(app, env, loggerFactory);
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            if (Configuration.UseControllers)
+                app.UseEndpoints(MapController);
+
+        }
+
+
+        protected virtual void MapController(IEndpointRouteBuilder endpoints)
+        {
+
+            endpoints.MapControllers();
 
         }
 
