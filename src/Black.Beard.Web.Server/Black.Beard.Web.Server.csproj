@@ -15,7 +15,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Configs\UrlBuildGitAzure.cs" />
+	  <Compile Remove="Servers\Configs\UrlBuildGitAzure.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

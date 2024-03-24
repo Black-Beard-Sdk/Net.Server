@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using NLog;
-using System;
-using Bb;
+﻿using NLog;
 
 namespace Bb.Extensions
 {

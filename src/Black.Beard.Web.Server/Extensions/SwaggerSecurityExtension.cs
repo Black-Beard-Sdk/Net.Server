@@ -1,5 +1,5 @@
-﻿using Bb.Models.Security;
-using Bb.Swashbuckle;
+﻿using Bb.Servers.Web.Models.Security;
+using Bb.Servers.Web.Swashbuckle;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Bb.Extensions

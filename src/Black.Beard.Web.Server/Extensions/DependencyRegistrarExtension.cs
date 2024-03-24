@@ -1,5 +1,5 @@
-﻿using Bb.Middlewares.ApiKeys;
-using Bb.ParrotServices.Middlewares;
+﻿using Bb.Servers.Web.Middlewares;
+using Bb.Servers.Web.Middlewares.ApiKeys;
 
 namespace Bb.Extensions
 {

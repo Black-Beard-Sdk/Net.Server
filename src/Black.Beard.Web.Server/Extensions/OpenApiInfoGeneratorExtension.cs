@@ -1,4 +1,4 @@
-﻿using Bb.Models;
+﻿using Bb.Servers.Web.Models;
 using Microsoft.OpenApi.Models;
 
 namespace Bb.Extensions

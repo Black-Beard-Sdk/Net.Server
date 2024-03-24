@@ -1,9 +1,9 @@
-﻿using Bb.Models.Security;
-using Bb;
+﻿using Bb;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using System.Reflection;
+using Bb.Servers.Web.Models.Security;
 
 namespace Bb.Extensions
 {

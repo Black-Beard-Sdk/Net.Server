@@ -1,8 +1,6 @@
-﻿using System.Text;
-
+﻿
 namespace Bb.Helpers
 {
-
 
     public static class HttpHelper
     {

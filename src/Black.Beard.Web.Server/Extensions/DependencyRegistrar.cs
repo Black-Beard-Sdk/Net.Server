@@ -1,5 +1,4 @@
-﻿using Bb.Models.Security;
-using System.Diagnostics.Contracts;
+﻿using Bb.Servers.Web.Models.Security;
 using System.Security.Claims;
 
 namespace Bb.Extensions

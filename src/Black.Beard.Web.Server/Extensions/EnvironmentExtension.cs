@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.AspNetCore.Hosting.Server;
-
+﻿
 namespace Bb.Extensions
 {
 

@@ -4,8 +4,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Net.NetworkInformation;
 using System.Diagnostics;
-using Bb;
-using ICSharpCode.Decompiler.IL;
 
 namespace Bb.Extensions
 {

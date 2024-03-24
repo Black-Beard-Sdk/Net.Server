@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics.Metrics;
-using System.Reflection;
+﻿using System.Diagnostics.Metrics;
 
 namespace Bb.Diagnostics
 {
