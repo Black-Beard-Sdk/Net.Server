@@ -7,6 +7,11 @@
 		<RootNamespace>Bb</RootNamespace>
 		<Company>Black beard</Company>
 		<OutputType>Library</OutputType>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Title>Black.Beard.Web.Server</Title>
+		<Description>Provide a service base for just concentrate your services</Description>
+		<RepositoryUrl>https://github.com/Black-Beard-Sdk/Net.Server</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
 
 	<ItemGroup>
