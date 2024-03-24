@@ -59,8 +59,7 @@
 
             targetFile.Refresh();
 
-            if (!targetFile.Directory.Exists)
-                targetFile.Directory.Create();
+            targetFile.Directory.CreateFolderIfNotExists();
 
             if (targetFile.Exists)
             {
