@@ -12,10 +12,19 @@
 		<Description>Provide a service base for just concentrate your services</Description>
 		<RepositoryUrl>https://github.com/Black-Beard-Sdk/Net.Server</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
+		<IsPackable>true</IsPackable>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
 	  <Compile Remove="Servers\Configs\UrlBuildGitAzure.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="..\..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 
 	<ItemGroup>
