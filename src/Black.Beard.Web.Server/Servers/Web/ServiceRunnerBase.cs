@@ -266,13 +266,13 @@ namespace Bb.Servers.Web
         {
 
             // target folder where write
-            GlobalDiagnosticsContext.Set("parrot_log_directory", GlobalConfiguration.DirectoryToTrace);
+            GlobalDiagnosticsContext.Set("web_log_directory", GlobalConfiguration.DirectoryToTrace);
 
             // push environment variables in the log
             foreach (DictionaryEntry item in Environment.GetEnvironmentVariables())
                 if (item.Key != null
                     && !string.IsNullOrEmpty(item.Key.ToString())
-                    && item.Key.ToString().StartsWith("parrot_log_"))
+                    && item.Key.ToString().StartsWith("web_log_"))
                     GlobalDiagnosticsContext.Set(item.Key.ToString(), item.Value?.ToString());
 
             // load the configuration file
