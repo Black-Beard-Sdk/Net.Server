@@ -149,20 +149,31 @@ namespace Bb.Servers.Web
         /// <summary>
         /// Runs asynchronous service
         /// </summary>
+        /// <param name="waitRunning">if set to <c>true</c> [wait service running].</param>
         /// <returns></returns>
-        public Task RunAsync()
+        public async Task RunAsync(bool waitRunning = true)
         {
 
             Status = ServiceRunnerStatus.Launching;
 
-            var r = Task.Run(() => { Run(); }, _token);
+            await Task.Run(() => { Run(); }, _token);
 
-            while (Status != ServiceRunnerStatus.Running)
-            {
-                Task.Yield();
-            }
+            if (waitRunning)
+                while (Status != ServiceRunnerStatus.Running)
+                    await Task.Yield();
 
-            return r;
+        }
+
+        /// <summary>
+        /// wait the predicate is true before continue
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <returns></returns>
+        public async Task Wait(Func<ServiceRunnerBase, bool> predicate)
+        {
+
+            while (predicate(this))
+                await Task.Yield();
 
         }
 

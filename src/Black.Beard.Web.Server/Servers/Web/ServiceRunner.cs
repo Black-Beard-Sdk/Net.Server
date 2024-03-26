@@ -129,9 +129,9 @@ namespace Bb.Servers.Web
         }
 
 
-        public ServiceRunner<TStartup> StartService(out Task task)
+        public ServiceRunner<TStartup> StartService()
         {
-            task = RunAsync();
+            RunAsync();
             return this;
         }
 
