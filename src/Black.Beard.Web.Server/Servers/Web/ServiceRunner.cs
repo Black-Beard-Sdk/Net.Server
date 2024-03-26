@@ -81,8 +81,30 @@ namespace Bb.Servers.Web
         /// <summary>
         /// Adds an <see cref="Url"/> on the list of listeners.
         /// </summary>
+        /// <param name="host">The host name. if null localhost is used by default</param>
+        /// <param name="startingPort">starting port to search.</param>
+        /// <returns></returns>
+        public ServiceRunner<TStartup> AddLocalhostSecureUrlWithDynamicPort(string? host, ref int startingPort)
+        {
+            return AddLocalhostUrlWithDynamicPort("https", host, ref startingPort);
+        }
+
+        /// <summary>
+        /// Adds an <see cref="Url"/> on the list of listeners.
+        /// </summary>
+        /// <param name="host">The host name. if null localhost is used by default</param>
+        /// <param name="startingPort">starting port to search.</param>
+        /// <returns></returns>
+        public ServiceRunner<TStartup> AddLocalhostUrlWithDynamicPort(string? host, ref int startingPort)
+        {
+            return AddLocalhostUrlWithDynamicPort("http", host, ref startingPort);
+        }
+
+        /// <summary>
+        /// Adds an <see cref="Url"/> on the list of listeners.
+        /// </summary>
         /// <param name="scheme">The scheme protocol.</param>
-        /// <param name="host">The host name. if null localhost used by default</param>
+        /// <param name="host">The host name. if null localhost is used by default</param>
         /// <param name="startingPort">starting port to search.</param>
         /// <returns></returns>
         public ServiceRunner<TStartup> AddLocalhostUrlWithDynamicPort(string scheme, string? host, ref int startingPort)
@@ -106,12 +128,19 @@ namespace Bb.Servers.Web
             return this;
         }
 
+
+        public ServiceRunner<TStartup> StartService(out Task task)
+        {
+            task = RunAsync();
+            return this;
+        }
+
+
         protected override void TuneHostBuilder(IWebHostBuilder webBuilder)
         {
             webBuilder.UseStartup<TStartup>();
         }
-
-
+              
     }
 
 }
