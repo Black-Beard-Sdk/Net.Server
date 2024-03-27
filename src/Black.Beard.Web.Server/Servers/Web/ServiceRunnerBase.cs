@@ -153,13 +153,13 @@ namespace Bb.Servers.Web
         /// Runs asynchronous service
         /// </summary>
         /// <param name="waitRunning">if set to <c>true</c> [wait service running].</param>
-        /// <returns></returns>
+        /// <returns></returns
         public async Task RunAsync(bool waitRunning = true)
         {
 
             Status = ServiceRunnerStatus.Launching;
 
-            await Task.Run(() => { Run(); }, _token);
+            await Task.Run(() => Run(), _token);
 
             if (waitRunning)
                 while (Status != ServiceRunnerStatus.Running)
