@@ -129,7 +129,7 @@ namespace Bb.Servers.Web
         }
 
 
-        public ServiceRunner<TStartup> StartService()
+        public virtual ServiceRunner<TStartup> StartService()
         {
             RunAsync();
             return this;

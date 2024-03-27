@@ -79,7 +79,7 @@ namespace Bb.Servers.Web
         /// <summary>
         /// Cancels the running instance.
         /// </summary>
-        public bool CancelAsync()
+        public virtual bool CancelAsync()
         {
 
             var task = Build.StopAsync();
@@ -108,7 +108,7 @@ namespace Bb.Servers.Web
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        public void Dispose()
+        public virtual void Dispose()
         {
             CancelAsync();
             Console.CancelKeyPress -= Console_CancelKeyPress;
@@ -154,7 +154,7 @@ namespace Bb.Servers.Web
         /// </summary>
         /// <param name="waitRunning">if set to <c>true</c> [wait service running].</param>
         /// <returns></returns
-        public async Task RunAsync(bool waitRunning = true)
+        public virtual async Task RunAsync(bool waitRunning = true)
         {
 
             Status = ServiceRunnerStatus.Launching;
@@ -165,6 +165,8 @@ namespace Bb.Servers.Web
                 while (Status != ServiceRunnerStatus.Running)
                     await Task.Yield();
 
+
+
         }
 
         /// <summary>
@@ -172,7 +174,7 @@ namespace Bb.Servers.Web
         /// </summary>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        public async Task Wait(Func<ServiceRunnerBase, bool> predicate)
+        public virtual async Task Wait(Func<ServiceRunnerBase, bool> predicate)
         {
 
             while (predicate(this))
@@ -183,7 +185,7 @@ namespace Bb.Servers.Web
         /// <summary>
         /// Runs this instance and wait closing.
         /// </summary>
-        public void Run()
+        public virtual void Run()
         {
 
             Status = ServiceRunnerStatus.Preparing;
@@ -207,7 +209,10 @@ namespace Bb.Servers.Web
 
                 Status = ServiceRunnerStatus.Running;
 
-                _task?.Wait();
+                ServiceRunning();
+
+
+                    _task?.Wait();
 
                 ExitCode = 0;
 
@@ -233,8 +238,15 @@ namespace Bb.Servers.Web
 
         }
 
+        /// <summary>
+        /// Interceptor for catch the service running
+        /// </summary>
+        protected virtual void ServiceRunning()
+        {
 
 
+
+        }
 
         protected virtual NLogAspNetCoreOptions ConfigureNlog()
         {
