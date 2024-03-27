@@ -14,6 +14,7 @@ using Bb.Servers.Web.Models.Security;
 using Bb.Servers.Web.Middlewares.EntryFullLogger;
 using Bb.Servers.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace Bb.Servers.Web
 {
@@ -40,7 +41,7 @@ namespace Bb.Servers.Web
             RegisterTypes(services);
 
             // see : https://learn.microsoft.com/fr-fr/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-7.0#fhmo
-            services.Configure<ForwardedHeadersOptions>(options => ConfigureForwardedHeadersOptions(options));
+            services.Configure<ForwardedHeadersOptions>(options => ConfigureForwardedHeadersOptions(options));            
 
             if (Configuration.UseSwagger) // Swagger OpenAPI 
                 RegisterServicesSwagger(services);
@@ -100,14 +101,26 @@ namespace Bb.Servers.Web
 
         protected async Task InterceptExceptions(HttpContext context)
         {
-            var exceptionHandler = context.Features.Get<IExceptionHandlerPathFeature>();
-            //var error = exceptionHandler.Error;
+            
             var response = new HttpExceptionModel
             {
                 Origin = AssemblyInformations?.AssemblyTitle ?? "web services",
                 TraceIdentifier = context.TraceIdentifier,
                 Session = context.Session.Id
             };
+
+
+            if (GlobalConfiguration.IsDevelopment)
+            {
+                var exceptionHandler = context.Features.Get<IExceptionHandlerPathFeature>();
+                if (exceptionHandler != null)
+                {
+                    var error = exceptionHandler.Error;
+                    response.Message = error.ToString();
+                }
+            }
+
+
             context.Response.StatusCode = 500;
             await context.Response.WriteAsJsonAsync(response);
         }
@@ -166,8 +179,9 @@ namespace Bb.Servers.Web
         {
 
             app.UseExceptionHandler(ConfigureInterceptExceptions);
-            app.UseHttpInfoLogger();             // log entries requests
 
+            //if (Configuration.TraceAll)
+            //    app.UseHttpInfoLogger();             // log entries requests
 
         }
 
@@ -202,13 +216,19 @@ namespace Bb.Servers.Web
                 c.AddDocumentation(i =>
                 {
                     i.Licence(l => l.Name("Only usable with a valid partner contract."));
-                }, "Black.*.xml");
+                }, DocumentationFilter);
                 c.AddSwaggerWithApiKeySecurity(services, CurrentConfiguration);
                 c.DocumentFilter<AppendInheritanceDocumentFilter>();
+                c.OperationFilter<FileResultContentTypeOperationFilter>();
                 c.UseOneOfForPolymorphism();
 
             });
         }
+
+        /// <summary>
+        /// Filter for tacking only documentation file specified by filter.
+        /// </summary>
+        public string DocumentationFilter { get; set; } = "Black.*.xml";
 
         public void RegisterTelemetry(IServiceCollection services)
         {
