@@ -14,7 +14,6 @@ using Bb.Servers.Web.Models.Security;
 using Bb.Servers.Web.Middlewares.EntryFullLogger;
 using Bb.Servers.Exceptions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 
 namespace Bb.Servers.Web
 {
@@ -359,5 +358,7 @@ namespace Bb.Servers.Web
         public GlobalConfiguration? Configuration { get; }
 
     }
+
+
 
 }

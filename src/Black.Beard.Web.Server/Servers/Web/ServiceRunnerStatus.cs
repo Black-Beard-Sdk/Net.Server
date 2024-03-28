@@ -3,7 +3,7 @@
     public enum ServiceRunnerStatus
     {
         Stopped = 0,
-        Launching = 1,
+        //Launching = 1,
         Preparing = 2,
         Starting = 3,
         Running = 4,

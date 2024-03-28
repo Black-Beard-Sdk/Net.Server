@@ -129,11 +129,11 @@ namespace Bb.Servers.Web
         }
 
 
-        public virtual ServiceRunner<TStartup> StartService()
-        {
-            RunAsync();
-            return this;
-        }
+        //public virtual ServiceRunner<TStartup> StartService()
+        //{
+        //    RunAsync();
+        //    return this;
+        //}
 
 
         protected override void TuneHostBuilder(IWebHostBuilder webBuilder)

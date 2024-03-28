@@ -5,9 +5,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Text;
 using Bb.Servers.Web.Models;
-using Bb.Attributes;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using OpenTelemetry.Trace;
 
 namespace Bb.Servers.Web
 {
@@ -25,7 +23,7 @@ namespace Bb.Servers.Web
         {
             _args = args;
             _tokenSource = new CancellationTokenSource();
-            _token = _tokenSource.Token;
+            CancellationToken = _tokenSource.Token;
             Console.CancelKeyPress += Console_CancelKeyPress;
             Logger = InitializeLogger();
         }
@@ -124,7 +122,7 @@ namespace Bb.Servers.Web
         /// </exception>
         public void Wait()
         {
-            _task?.Wait(_token);
+            _task?.Wait(CancellationToken);
         }
 
         /// <summary>
@@ -147,40 +145,7 @@ namespace Bb.Servers.Web
         public void Wait(int millisecondsTimeout)
         {
             _task?.Wait(millisecondsTimeout);
-        }
-
-        /// <summary>
-        /// Runs asynchronous service
-        /// </summary>
-        /// <param name="waitRunning">if set to <c>true</c> [wait service running].</param>
-        /// <returns></returns
-        public virtual async Task RunAsync(bool waitRunning = true)
-        {
-
-            Status = ServiceRunnerStatus.Launching;
-
-            await Task.Run(() => Run(), _token);
-
-            if (waitRunning)
-                while (Status != ServiceRunnerStatus.Running)
-                    await Task.Yield();
-
-
-
-        }
-
-        /// <summary>
-        /// wait the predicate is true before continue
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public virtual async Task Wait(Func<ServiceRunnerBase, bool> predicate)
-        {
-
-            while (predicate(this))
-                await Task.Yield();
-
-        }
+        }         
 
         /// <summary>
         /// Runs this instance and wait closing.
@@ -200,7 +165,7 @@ namespace Bb.Servers.Web
             try
             {
 
-                _task = RunAsync(Build);
+                _task = RunAsyncImpl(Build);
 
                 if (_exception != null)
                     throw _exception;
@@ -317,9 +282,6 @@ namespace Bb.Servers.Web
             return logger;
         }
 
-
-
-
         private IHostBuilder CreateHostBuilder(Logger logger, string[] args)
         {
 
@@ -345,7 +307,7 @@ namespace Bb.Servers.Web
 
         }
 
-        private async Task RunAsync(IHost host, CancellationToken token = default)
+        private async Task RunAsyncImpl(IHost host, CancellationToken token = default)
         {
             try
             {
@@ -430,7 +392,7 @@ namespace Bb.Servers.Web
         protected List<Uri>? _urls;
         private readonly string[] _args;
         private readonly CancellationTokenSource _tokenSource;
-        private readonly CancellationToken _token;
+        public readonly CancellationToken CancellationToken;
 
     }
 
