@@ -256,7 +256,7 @@ namespace Bb.Servers.Web
                             activity.SetTag("responseLength", httpResponse.ContentLength);
                         };
                         o.EnrichWithException = (activity, exception) =>
-                        {
+                         {
                             activity.SetTag("exceptionType", exception.GetType().ToString());
                         };
 
