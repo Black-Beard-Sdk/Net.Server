@@ -11,7 +11,7 @@ namespace Bb.Servers.Web
     /// </summary>
     public class ServiceRunner<TStartup>
         : ServiceRunnerBase, IDisposable
-        where TStartup : class
+        where TStartup : ServiceRunnerStartup
     {
 
         /// <summary>
@@ -129,18 +129,25 @@ namespace Bb.Servers.Web
         }
 
 
-        //public virtual ServiceRunner<TStartup> StartService()
-        //{
-        //    RunAsync();
-        //    return this;
-        //}
-
-
         protected override void TuneHostBuilder(IWebHostBuilder webBuilder)
         {
             webBuilder.UseStartup<TStartup>();
         }
-              
+
+        protected override void TuneWebHostBuilder(WebApplicationBuilder webBuilder)
+        {
+            _startup = (TStartup)Activator.CreateInstance(typeof(TStartup), new object[] { webBuilder.Configuration });
+            _startup.ConfigureServices(webBuilder.Services);
+        }
+
+        protected override void ConfigureApplication(WebApplication wbuilder, IWebHostEnvironment environment, ILoggerFactory? loggerFactory)
+        {
+            if (_startup != null)
+                _startup.ConfigureApplication(wbuilder, environment, loggerFactory!);
+        }
+
+        private TStartup? _startup;
+
     }
 
 }

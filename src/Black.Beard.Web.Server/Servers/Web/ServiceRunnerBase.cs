@@ -33,7 +33,6 @@ namespace Bb.Servers.Web
         /// </summary>
         public ServiceRunnerStatus Status { get; protected set; }
 
-
         /// <summary>
         /// Gets the exit code.
         /// </summary>
@@ -145,7 +144,9 @@ namespace Bb.Servers.Web
         public void Wait(int millisecondsTimeout)
         {
             _task?.Wait(millisecondsTimeout);
-        }         
+        }
+
+        public bool IsWebApplication { get; set; }
 
         /// <summary>
         /// Runs this instance and wait closing.
@@ -155,10 +156,20 @@ namespace Bb.Servers.Web
 
             Status = ServiceRunnerStatus.Preparing;
 
-            Build
-                = CreateHostBuilder(Logger, _args)
-                 .Build()
-                ;
+            IHostBuilder builder = null;
+
+            if (IsWebApplication)
+            {
+                var webBuilder = CreateWebHostBuilder(Logger, _args);
+                WebApplication wbuilder = webBuilder.Build();
+                ConfigureApplication(wbuilder, wbuilder.Environment, wbuilder.Services.GetService<ILoggerFactory>());
+                Build = wbuilder;
+            }
+            else
+            {
+                builder = CreateHostBuilder(Logger, _args);
+                Build = builder.Build();
+            }
 
             Trace.TraceInformation("Current directory : " + Directory.GetCurrentDirectory());
 
@@ -177,7 +188,7 @@ namespace Bb.Servers.Web
                 ServiceRunning();
 
 
-                    _task?.Wait();
+                _task?.Wait();
 
                 ExitCode = 0;
 
@@ -200,6 +211,11 @@ namespace Bb.Servers.Web
                 LogManager.Shutdown();
                 Environment.ExitCode = ExitCode;
             }
+
+        }
+
+        protected virtual void ConfigureApplication(WebApplication wbuilder, IWebHostEnvironment environment, ILoggerFactory? loggerFactory)
+        {
 
         }
 
@@ -248,11 +264,6 @@ namespace Bb.Servers.Web
 
         }
 
-        protected virtual void TuneHostBuilder(IWebHostBuilder webBuilder)
-        {
-
-        }
-
         protected virtual Logger InitializeLogger()
         {
 
@@ -282,10 +293,38 @@ namespace Bb.Servers.Web
             return logger;
         }
 
-        private IHostBuilder CreateHostBuilder(Logger logger, string[] args)
+
+        protected virtual void TuneHostBuilder(IWebHostBuilder webBuilder)
         {
 
-            //InitializeByOs();
+        }
+
+        protected virtual void TuneWebHostBuilder(WebApplicationBuilder webBuilder)
+        {
+
+        }
+
+        private WebApplicationBuilder CreateWebHostBuilder(Logger logger, string[] args)
+        {
+
+            WebApplicationBuilder webBuilder = WebApplication.CreateBuilder(args);
+
+            if (_urls != null)
+                webBuilder.WebHost.UseUrls(ConcatUrl(_urls).ToString());
+
+            webBuilder.WebHost.ConfigureAppConfiguration((hostingContext, config) => SetConfiguration(logger, hostingContext, config));
+
+            webBuilder.WebHost.ConfigureLogging(l => ConfigureLogging(l))
+                      .UseNLog(ConfigureNlog());
+
+            TuneWebHostBuilder(webBuilder);
+
+            return webBuilder;
+
+        }
+
+        private IHostBuilder CreateHostBuilder(Logger logger, string[] args)
+        {
 
             IHostBuilder hostBuilder = Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
