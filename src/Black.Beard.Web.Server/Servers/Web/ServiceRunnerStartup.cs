@@ -317,7 +317,7 @@ namespace Bb.Servers.Web
                 //var cc2 = c.GenerateContracts();
             })
             .UseTypeExposedByAttribute(CurrentConfiguration, Constants.Models.Model)
-            .UseTypeExposedByAttribute(CurrentConfiguration, Constants.Models.Service);
+            .UseTypeExposedByAttribute(CurrentConfiguration, Constants.Models.Service);            
 
         }
 

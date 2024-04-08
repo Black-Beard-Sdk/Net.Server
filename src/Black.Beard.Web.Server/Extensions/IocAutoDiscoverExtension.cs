@@ -45,8 +45,6 @@ namespace Bb.Extensions
         }
 
 
-
-
         private static void BindConfiguration<TOptions>(this IServiceCollection self, IConfiguration configuration)
             where TOptions : class
         {
@@ -66,6 +64,7 @@ namespace Bb.Extensions
 
         }
         
+
         private static void AddType<T>(this IServiceCollection services, IConfiguration configuration)
             where T : class
         {
@@ -78,6 +77,7 @@ namespace Bb.Extensions
             else
                 services.RegisterType<T>();
         }
+
 
         private static void RegisterType<T>(this IServiceCollection services, Func<IServiceProvider, T> func)
             where T : class
@@ -148,7 +148,16 @@ namespace Bb.Extensions
         /// <returns></returns>
         public static IEnumerable<Type> GetExposedTypes(string contextName)
         {
-            var items = ComponentModel.TypeDiscovery.Instance.GetTypesWithAttributes<ExposeClassAttribute>(typeof(object), c => c.Context == contextName);
+            var items = ComponentModel.TypeDiscovery.Instance
+                .GetTypesWithAttributes<ExposeClassAttribute>(typeof(object), c => c.Context == contextName);
+            return items;
+        }
+
+
+        public static IEnumerable<Type> GetExposedTypes(Func<ExposeClassAttribute, bool> filter)
+        {
+            var items = ComponentModel.TypeDiscovery.Instance
+                .GetTypesWithAttributes<ExposeClassAttribute>(typeof(object), c => filter(c));
             return items;
         }
 
