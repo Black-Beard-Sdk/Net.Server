@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.Text;
 using Bb.Servers.Web.Models;
 using OpenTelemetry.Trace;
+using Bb.ComponentModel;
+using System.Reflection;
 
 namespace Bb.Servers.Web
 {
@@ -26,6 +28,7 @@ namespace Bb.Servers.Web
             CancellationToken = _tokenSource.Token;
             Console.CancelKeyPress += Console_CancelKeyPress;
             Logger = InitializeLogger();
+
         }
 
         /// <summary>
@@ -34,10 +37,10 @@ namespace Bb.Servers.Web
         public ServiceRunnerStatus Status { get; protected set; }
 
         /// <summary>
+        /// The exit code.
         /// Gets the exit code.
         /// </summary>
         /// <value>
-        /// The exit code.
         /// </value>
         public int ExitCode { get; protected set; }
 

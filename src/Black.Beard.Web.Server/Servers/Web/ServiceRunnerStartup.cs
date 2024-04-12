@@ -308,16 +308,20 @@ namespace Bb.Servers.Web
         /// <param name="configuration"></param>
         public virtual void RegisterTypes(IServiceCollection services)
         {
+            AssemblyLoader.Instance.EnsureAssemblyIsLoaded(Assembly.GetEntryAssembly(), true, false);
+
+            //var assembly = Assembly.GetEntryAssembly();
+            //foreach (var item in assembly.GetReferencedAssemblies())
+            //    AssemblyLoader.Instance.LoadAssemblyName(item);
 
             // Auto discover all types with attribute [ExposeClass] for register in ioc.
             services.UseTypeExposedByAttribute(CurrentConfiguration, ConstantsCore.Configuration, c =>
             {
                 services.BindConfiguration(c, CurrentConfiguration);
-                //var cc1 = JsonSchema.FromType(c).ToJson();
-                //var cc2 = c.GenerateContracts();
-            })
-            .UseTypeExposedByAttribute(CurrentConfiguration, Constants.Models.Model)
-            .UseTypeExposedByAttribute(CurrentConfiguration, Constants.Models.Service);            
+            });
+
+            services.UseTypeExposedByAttribute(CurrentConfiguration, Constants.Models.Model)
+                    .UseTypeExposedByAttribute(CurrentConfiguration, Constants.Models.Service);            
 
         }
 
