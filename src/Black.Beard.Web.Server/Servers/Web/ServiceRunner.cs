@@ -1,6 +1,7 @@
 ﻿using Bb.ComponentModel;
 using Bb.Extensions;
 using Bb.Helpers;
+using System.Reflection.PortableExecutable;
 
 namespace Bb.Servers.Web
 {
@@ -136,14 +137,18 @@ namespace Bb.Servers.Web
 
         protected override void TuneWebHostBuilder(WebApplicationBuilder webBuilder)
         {
+            base.TuneWebHostBuilder(webBuilder);
             _startup = (TStartup)Activator.CreateInstance(typeof(TStartup), new object[] { webBuilder.Configuration });
             _startup.ConfigureServices(webBuilder.Services);
         }
 
         protected override void ConfigureApplication(WebApplication wbuilder, IWebHostEnvironment environment, ILoggerFactory? loggerFactory)
         {
+            base.ConfigureApplication(wbuilder, environment, loggerFactory);
             if (_startup != null)
                 _startup.ConfigureApplication(wbuilder, environment, loggerFactory!);
+
+
         }
 
         private TStartup? _startup;

@@ -8,6 +8,9 @@ using Bb.Servers.Web.Models;
 using OpenTelemetry.Trace;
 using Bb.ComponentModel;
 using System.Reflection;
+using Bb.Servers.Web.Loaders;
+using System.Reflection.PortableExecutable;
+using System.IO;
 
 namespace Bb.Servers.Web
 {
@@ -28,7 +31,7 @@ namespace Bb.Servers.Web
             CancellationToken = _tokenSource.Token;
             Console.CancelKeyPress += Console_CancelKeyPress;
             Logger = InitializeLogger();
-
+            _currentDirectory = Directory.GetCurrentDirectory();
         }
 
         /// <summary>
@@ -67,6 +70,8 @@ namespace Bb.Servers.Web
         /// The logger.
         /// </value>
         public Logger Logger { get; }
+
+        private readonly string _currentDirectory;
 
         /// <summary>
         /// Gets the runner task.
@@ -187,14 +192,11 @@ namespace Bb.Servers.Web
                 EnumerateListeners();
 
                 Status = ServiceRunnerStatus.Running;
-
                 ServiceRunning();
-
 
                 _task?.Wait();
 
                 ExitCode = 0;
-
                 Status = ServiceRunnerStatus.Stopped;
 
             }
@@ -220,6 +222,12 @@ namespace Bb.Servers.Web
         protected virtual void ConfigureApplication(WebApplication wbuilder, IWebHostEnvironment environment, ILoggerFactory? loggerFactory)
         {
 
+            var path = Initializers.ResolveFilename(wbuilder, _currentDirectory.Combine("Configs"));
+            Initializers.Initialize(wbuilder, path, action =>
+            {
+
+            });
+
         }
 
         /// <summary>
@@ -243,13 +251,11 @@ namespace Bb.Servers.Web
 
         protected virtual void ConfigureLogging(ILoggingBuilder builder)
         {
-            builder.ClearProviders()
-           ;
+            builder.ClearProviders();
         }
 
         protected virtual void SetConfiguration(Logger logger, WebHostBuilderContext hostingContext, IConfigurationBuilder config)
         {
-
 
             GlobalConfiguration.IsDevelopment = hostingContext.HostingEnvironment.IsDevelopment();
             GlobalConfiguration.IsProduction = hostingContext.HostingEnvironment.IsProduction();
@@ -300,12 +306,20 @@ namespace Bb.Servers.Web
 
         protected virtual void TuneHostBuilder(IWebHostBuilder webBuilder)
         {
+            var path = Initializers.ResolveFilename(webBuilder, _currentDirectory.Combine("Configs"));
+            Initializers.Initialize(webBuilder, path, action =>
+            {
 
+            });
         }
 
         protected virtual void TuneWebHostBuilder(WebApplicationBuilder webBuilder)
         {
+            var path = Initializers.ResolveFilename(webBuilder, _currentDirectory.Combine("Configs"));
+            Initializers.Initialize(webBuilder, path, action =>
+            {
 
+            });
         }
 
         private WebApplicationBuilder CreateWebHostBuilder(Logger logger, string[] args)

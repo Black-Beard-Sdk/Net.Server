@@ -14,6 +14,7 @@ using Bb.Servers.Web.Models.Security;
 using Bb.Servers.Web.Middlewares.EntryFullLogger;
 using Bb.Servers.Exceptions;
 using Microsoft.AspNetCore.Mvc;
+using Bb.ComponentModel.Loaders;
 
 namespace Bb.Servers.Web
 {
@@ -40,7 +41,7 @@ namespace Bb.Servers.Web
             RegisterTypes(services);
 
             // see : https://learn.microsoft.com/fr-fr/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-7.0#fhmo
-            services.Configure<ForwardedHeadersOptions>(options => ConfigureForwardedHeadersOptions(options));            
+            services.Configure<ForwardedHeadersOptions>(options => ConfigureForwardedHeadersOptions(options));
 
             if (Configuration.UseSwagger) // Swagger OpenAPI 
                 RegisterServicesSwagger(services);
@@ -100,7 +101,7 @@ namespace Bb.Servers.Web
 
         protected async Task InterceptExceptions(HttpContext context)
         {
-            
+
             var response = new HttpExceptionModel
             {
                 Origin = AssemblyInformations?.AssemblyTitle ?? "web services",
@@ -257,8 +258,8 @@ namespace Bb.Servers.Web
                         };
                         o.EnrichWithException = (activity, exception) =>
                          {
-                            activity.SetTag("exceptionType", exception.GetType().ToString());
-                        };
+                             activity.SetTag("exceptionType", exception.GetType().ToString());
+                         };
 
                     })
                     .AddSource(keys)
@@ -278,21 +279,6 @@ namespace Bb.Servers.Web
 
             });
 
-            //services.Configure<AspNetCoreTraceInstrumentationOptions>(options =>
-            //{
-            //    //options.Filter = (httpContext) =>
-            //    //{
-            //    //    // only collect telemetry about HTTP GET requests
-            //    //    return httpContext.Request.Method.Equals("GET");
-            //    //};
-            //});
-
-            //builder.Configuration.AddInMemoryCollection(
-            //    new Dictionary<string, string?>
-            //    {
-            //        ["OTEL_DOTNET_EXPERIMENTAL_ASPNETCORE_ENABLE_GRPC_INSTRUMENTATION"] = "true",
-            //    });
-
         }
 
         public virtual void ConfigureTelemetry(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
@@ -308,11 +294,6 @@ namespace Bb.Servers.Web
         /// <param name="configuration"></param>
         public virtual void RegisterTypes(IServiceCollection services)
         {
-            AssemblyLoader.Instance.EnsureAssemblyIsLoaded(Assembly.GetEntryAssembly(), true, false);
-
-            //var assembly = Assembly.GetEntryAssembly();
-            //foreach (var item in assembly.GetReferencedAssemblies())
-            //    AssemblyLoader.Instance.LoadAssemblyName(item);
 
             // Auto discover all types with attribute [ExposeClass] for register in ioc.
             services.UseTypeExposedByAttribute(CurrentConfiguration, ConstantsCore.Configuration, c =>
@@ -321,7 +302,7 @@ namespace Bb.Servers.Web
             });
 
             services.UseTypeExposedByAttribute(CurrentConfiguration, Constants.Models.Model)
-                    .UseTypeExposedByAttribute(CurrentConfiguration, Constants.Models.Service);            
+                    .UseTypeExposedByAttribute(CurrentConfiguration, Constants.Models.Service);
 
         }
 
