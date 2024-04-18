@@ -288,7 +288,7 @@ namespace Bb.Servers.Web
 
             // load the configuration file
             var configLogPath = Directory.GetCurrentDirectory().Combine("nlog.config");
-            if (!File.Exists(configLogPath))
+            if (File.Exists(configLogPath))
                 LogManager.Configuration = new NLog.Config.XmlLoggingConfiguration(configLogPath);
 
             // Initialize log
