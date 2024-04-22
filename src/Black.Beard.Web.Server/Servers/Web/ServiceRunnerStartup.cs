@@ -14,7 +14,6 @@ using Bb.Servers.Web.Models.Security;
 using Bb.Servers.Web.Middlewares.EntryFullLogger;
 using Bb.Servers.Exceptions;
 using Microsoft.AspNetCore.Mvc;
-using Bb.ComponentModel.Loaders;
 
 namespace Bb.Servers.Web
 {
@@ -41,7 +40,7 @@ namespace Bb.Servers.Web
             RegisterTypes(services);
 
             // see : https://learn.microsoft.com/fr-fr/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-7.0#fhmo
-            services.Configure<ForwardedHeadersOptions>(options => ConfigureForwardedHeadersOptions(options));
+            services.Configure<ForwardedHeadersOptions>(ConfigureForwardedHeadersOptions);
 
             if (Configuration.UseSwagger) // Swagger OpenAPI 
                 RegisterServicesSwagger(services);
@@ -87,16 +86,11 @@ namespace Bb.Servers.Web
         public virtual void AppendServices(IServiceCollection services)
         {
 
-
-
         }
 
         protected virtual void ConfigureInterceptExceptions(IApplicationBuilder c)
         {
-            c.Run(async context =>                                                              // Intercepts exceptions, format 
-            {                                                                                   // the message result and log with trace identifier.
-                await InterceptExceptions(context);
-            });
+            c.Run(InterceptExceptions);
         }
 
         protected async Task InterceptExceptions(HttpContext context)
@@ -186,22 +180,6 @@ namespace Bb.Servers.Web
         }
 
         #endregion Configure
-
-
-        protected virtual void RegisterServicesPolicies(IServiceCollection services)
-        {
-            // Auto discovers all services with Authorize attribute and 
-            // Initialize security policies for apply permissions based on identityPrincipal authorizations
-            var policies = PoliciesExtension.GetPolicies();
-            if (policies.Any())
-                services.AddAuthorization(options =>
-                {
-                    foreach (var policyModel in policies)
-                        options.AddPolicy(policyModel.Name, policy => policy.RequireAssertion(a => Authorize(a, policyModel)));
-                });
-            var currentAssembly = Assembly.GetAssembly(GetType());
-            policies.SaveInFolder(Path.GetDirectoryName(currentAssembly.Location));
-        }
 
         protected virtual void RegisterServicesSwagger(IServiceCollection services)
         {
@@ -341,6 +319,28 @@ namespace Bb.Servers.Web
         public IConfiguration CurrentConfiguration { get; }
 
         public GlobalConfiguration? Configuration { get; }
+
+
+
+
+
+        //protected virtual void RegisterServicesPolicies(IServiceCollection services)
+        //{
+
+        //    // Auto discovers all services with Authorize attribute and 
+        //    // Initialize security policies for apply permissions based on identityPrincipal authorizations
+        //    var policies = PoliciesExtension.GetReferencedPolicies();
+        //    if (policies.Any())
+        //        services.AddAuthorization(options =>
+        //        {
+        //            foreach (var policyModel in policies)
+        //                options.AddPolicy(policyModel.Name, policy => policy.RequireAssertion(a => Authorize(a, policyModel)));
+
+        //        });
+        //    var currentAssembly = Assembly.GetAssembly(GetType());
+        //    policies.SaveInFolder(Path.GetDirectoryName(currentAssembly.Location));
+        //}
+
 
     }
 

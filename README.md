@@ -34,16 +34,6 @@ $ install-package Black.Beard.Web.Server
             // Yours configuration           
             base.ConfigureServices(services);
         }
-
-        /// <summary>
-        /// Configures the custom services.
-        /// </summary>
-        /// <param name="services"></param>
-        public override void AppendServices(IServiceCollection services)
-        {
-            RegisterServicesPolicies(services);
-        }
-
     
         /// <summary>
         /// Configures the specified application.
@@ -60,9 +50,6 @@ $ install-package Black.Beard.Web.Server
                 .UseHttpsRedirection()
                 .UseRouting()
                 .UseListener()
-
-                //.UseApiKey()                      // Intercept apiKey and create identityPrincipal associated
-                //.UseAuthorization()               // Apply authorization for identityPrincipal
                 ;
 
         }
@@ -92,5 +79,132 @@ $ install-package Black.Beard.Web.Server
         }
 
     }
+
+```
+
+
+You can configure WebApplicationBuilder like that
+```csharp
+
+
+    [ExposeClass(ConstantsCore.Initialization, ExposedType = typeof(IApplicationBuilderInitializer<WebApplicationBuilder>), LifeCycle = IocScopeEnum.Transiant)]
+    public class ModuleInitializeWebApplicationBuilder : ApplicationInitializerBase<WebApplicationBuilder>
+    {
+               
+        public override void Execute(WebApplicationBuilder builder)
+        {
+
+            var services = builder.Services;
+
+            services.AddAuthorization(options =>
+            {
+
+                options.AddPolicy("Admin", policy =>
+                {
+                    policy.RequireRole("Admin");
+                });
+
+            });
+
+
+        }
+
+    }
+
+```
+
+
+You can configure service like that
+```csharp
+
+    [ExposeClass(ConstantsCore.Initialization, ExposedType = typeof(IApplicationBuilderInitializer<WebApplication>), LifeCycle = IocScopeEnum.Transiant)]
+    public class ModuleInitializeWebApplication : ApplicationInitializerBase<WebApplication>
+    {
+              
+        public override void Execute(WebApplication builder)
+        {
+            
+        }
+
+    }
+```
+
+All json files existing in the root of the application and in the folder Configs are loaded, and you can append configuration fragment like that
+```csharp
+
+    [ExposeClass(ConstantsCore.Initialization, ExposedType = typeof(IInjectBuilder<IConfigurationBuilder>))]
+    public class ConfigurationBuilderBuilder : InjectBuilder<IConfigurationBuilder>
+    {
+
+        public override object Execute(IConfigurationBuilder service)
+        {
+
+            service.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("Configs/appsettings.json", optional: true, reloadOnChange: true)
+                ;
+
+            return 0;
+        }
+    }
+
+```
+
+
+You can inject configuration like that. in the sqample ConnectionStringSettings is the name of the section in the configuration documents
+```csharp
+
+    [ExposeClass(ConstantsCore.Configuration, ConfigurationKey = "ConnectionStringSettings", LifeCycle = IocScopeEnum.Transiant)]
+    public partial class ConnectionSettings
+    {
+
+        public ConnectionSettings()
+        {
+            this.ConnectionStringSettings = new ConnectionStringSettings();
+        }
+
+        public ConnectionStringSettings ConnectionStringSettings { get; set; }
+
+    }
+
+    // You can ask the configuration like that
+    var connectionSettings = builder.Services.GetService<Option<ConnectionSettings>>();
+
+```
+
+
+
+You can inject service like that
+```csharp
+
+    [ExposeClass(ConstantsCore.Service, LifeCycle = IocScopeEnum.Transiant)]
+    public partial class MyService : IService
+    {
+        public MyService()
+        {
+        }
+
+        public void Execute()
+        {
+            Console.WriteLine("MyService");
+        }
+    }
+
+    // You can ask the service like that
+    var instance = builder.Services.GetService<MyService>();
+
+```
+
+
+
+You can using the injection like that
+```csharp
+
+    TService uiService = builder.Services.GetService<TService>(); 
+    var loader = new InjectionLoader<TService>(UIConstants.LeftMenu, builder.Services)
+        .LoadModules(c =>
+        {
+
+        })
+    .Execute(uiService);
 
 ```

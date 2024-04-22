@@ -51,7 +51,7 @@ namespace Bb.Extensions
 
         }
 
-        public static List<PolicyModel> GetPolicies() => PoliciesExtension.GetTypes().GetTypePolicies().ToList();
+        public static List<PolicyModel> GetReferencedPolicies() => PoliciesExtension.GetTypes().GetTypePolicies().ToList();
 
         /// <summary>
         /// Return the list of method for all declarated controller

@@ -1,30 +1,29 @@
-﻿using Bb.ComponentModel.Loaders;
+﻿using Bb.ComponentModel.Attributes;
+using Bb.ComponentModel;
+using Bb.ComponentModel.Loaders;
 
 namespace Bb.Servers.Web.Loaders
 {
-    public class Initializers
+
+
+    public static class Initializers
     {
 
-        public static void Initialize<T>(T builderbuilder, string path, Action<IApplicationBuilderInitializer<T>> action)
+        public static T Initialize<T>(this T self, Action<IApplicationBuilderInitializer<T>> action = null)
         {
 
-            ExposedAssemblyRepositories assemblies = null;
-            var file = path.AsFile();
-            if (file.Exists)
-                assemblies = file.LoadFromFileAndDeserialize<ExposedAssemblyRepositories>();
-
-            var loader = new InitializationLoader<T>();
-            if (assemblies != null)
-                loader.InitializeAssemblies(assemblies);
-
-            loader.LoadModules(action).Execute(builderbuilder);
-
+            var loader = new InitializationLoader<T>(ConstantsCore.Initialization)
+                .LoadModules(action)
+                .Execute(self);
+            return self;
         }
 
-        public static string ResolveFilename<T>(T self, string root)
+        public static string ResolveFilename<T>(this T self, string root)
         {
             return root.Combine(self.GetType().Name + ".json");
         }
 
     }
+
+
 }

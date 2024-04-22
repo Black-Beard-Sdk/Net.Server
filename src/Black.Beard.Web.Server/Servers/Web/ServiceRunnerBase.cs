@@ -11,6 +11,11 @@ using System.Reflection;
 using Bb.Servers.Web.Loaders;
 using System.Reflection.PortableExecutable;
 using System.IO;
+using Bb.ComponentModel.Loaders;
+using Microsoft.Extensions.Options;
+using Microsoft.VisualBasic;
+using Bb.ComponentModel.Accessors;
+using Bb.ComponentModel.Factories;
 
 namespace Bb.Servers.Web
 {
@@ -32,6 +37,23 @@ namespace Bb.Servers.Web
             Console.CancelKeyPress += Console_CancelKeyPress;
             Logger = InitializeLogger();
             _currentDirectory = Directory.GetCurrentDirectory();
+
+
+            var dir = _currentDirectory.Combine("Configs").AsDirectory();
+            var files = dir.GetFiles("ExposedAssemblyRepositories*.json", SearchOption.AllDirectories);
+            foreach (var file in files)
+                try
+                {
+                    ExposedAssemblyRepositories assemblies = file.LoadFromFileAndDeserialize<ExposedAssemblyRepositories>();
+                    assemblies.Load();
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+
+
+
         }
 
         /// <summary>
@@ -221,13 +243,7 @@ namespace Bb.Servers.Web
 
         protected virtual void ConfigureApplication(WebApplication wbuilder, IWebHostEnvironment environment, ILoggerFactory? loggerFactory)
         {
-
-            var path = Initializers.ResolveFilename(wbuilder, _currentDirectory.Combine("Configs"));
-            Initializers.Initialize(wbuilder, path, action =>
-            {
-
-            });
-
+            wbuilder.Initialize();
         }
 
         /// <summary>
@@ -252,25 +268,6 @@ namespace Bb.Servers.Web
         protected virtual void ConfigureLogging(ILoggingBuilder builder)
         {
             builder.ClearProviders();
-        }
-
-        protected virtual void SetConfiguration(Logger logger, WebHostBuilderContext hostingContext, IConfigurationBuilder config)
-        {
-
-            GlobalConfiguration.IsDevelopment = hostingContext.HostingEnvironment.IsDevelopment();
-            GlobalConfiguration.IsProduction = hostingContext.HostingEnvironment.IsProduction();
-            GlobalConfiguration.IsStaging = hostingContext.HostingEnvironment.IsStaging();
-
-            // Load configurations files
-            new ConfigurationLoader(logger, hostingContext, config)
-                 .TryToLoadConfigurationFile("appsettings.json", false, false)
-                 .TryToLoadConfigurationFile("apikeysettings.json", false, false)
-                 .TryToLoadConfigurationFile("policiessettings.json", false, false)
-             ;
-
-            config.AddEnvironmentVariables();
-            config.AddCommandLine(_args);
-
         }
 
         protected virtual Logger InitializeLogger()
@@ -303,37 +300,35 @@ namespace Bb.Servers.Web
             return logger;
         }
 
-
         protected virtual void TuneHostBuilder(IWebHostBuilder webBuilder)
         {
-            var path = Initializers.ResolveFilename(webBuilder, _currentDirectory.Combine("Configs"));
-            Initializers.Initialize(webBuilder, path, action =>
-            {
 
-            });
         }
 
         protected virtual void TuneWebHostBuilder(WebApplicationBuilder webBuilder)
         {
-            var path = Initializers.ResolveFilename(webBuilder, _currentDirectory.Combine("Configs"));
-            Initializers.Initialize(webBuilder, path, action =>
-            {
 
-            });
         }
+
 
         private WebApplicationBuilder CreateWebHostBuilder(Logger logger, string[] args)
         {
 
             WebApplicationBuilder webBuilder = WebApplication.CreateBuilder(args);
 
+            if (webBuilder == null)
+                throw new InvalidOperationException("WebApplicationBuilder is null");
+
             if (_urls != null)
                 webBuilder.WebHost.UseUrls(ConcatUrl(_urls).ToString());
 
-            webBuilder.WebHost.ConfigureAppConfiguration((hostingContext, config) => SetConfiguration(logger, hostingContext, config));
+            webBuilder.WebHost.ConfigureAppConfiguration((hostingContext, config) => ConfigureApplication(logger, hostingContext, config));
+
 
             webBuilder.WebHost.ConfigureLogging(l => ConfigureLogging(l))
                       .UseNLog(ConfigureNlog());
+
+            webBuilder.Initialize();
 
             TuneWebHostBuilder(webBuilder);
 
@@ -351,10 +346,12 @@ namespace Bb.Servers.Web
                     if (_urls != null)
                         webBuilder.UseUrls(ConcatUrl(_urls).ToString());
 
-                    webBuilder.ConfigureAppConfiguration((hostingContext, config) => SetConfiguration(logger, hostingContext, config));
+                    webBuilder.ConfigureAppConfiguration((hostingContext, config) => ConfigureApplication(logger, hostingContext, config));
 
                     webBuilder.ConfigureLogging(l => ConfigureLogging(l))
                               .UseNLog(ConfigureNlog());
+
+                    webBuilder.Initialize();
 
                     TuneHostBuilder(webBuilder);
 
@@ -363,6 +360,51 @@ namespace Bb.Servers.Web
             return hostBuilder;
 
         }
+
+        private void ConfigureApplication(Logger logger, WebHostBuilderContext hostingContext, IConfigurationBuilder config)
+        {
+
+            GlobalConfiguration.IsDevelopment = hostingContext.HostingEnvironment.IsDevelopment();
+            GlobalConfiguration.IsStaging = hostingContext.HostingEnvironment.IsStaging();
+            GlobalConfiguration.IsProduction = hostingContext.HostingEnvironment.IsProduction();
+
+            LoadConfiguration(logger, hostingContext, config);
+
+            var provider = new LocalServiceProvider()
+                .Add(typeof(WebHostBuilderContext), hostingContext);
+            var loader = new InjectionLoader<IConfigurationBuilder>(ConstantsCore.Initialization)
+                .LoadModules()
+                .Execute(config);
+
+        }
+
+        protected virtual void LoadConfiguration(Logger logger, WebHostBuilderContext hostingContext, IConfigurationBuilder config)
+        {
+
+            var env = hostingContext.HostingEnvironment;
+            var dirs = new List<DirectoryInfo>() { env.ContentRootPath.AsDirectory() };
+
+            var c = env.ContentRootPath.Combine("Configs").AsDirectory();
+            if (c.Exists)
+                dirs.Add(c);
+
+            foreach (var dir in dirs)
+            {
+                foreach (var file in dir.GetFiles($"*.{env.EnvironmentName}.json"))
+                {
+                    config.AddJsonFile(file.FullName, optional: false, reloadOnChange: false);
+                    logger.Debug($"configuration file {file.FullName} is loaded.");
+                }
+            }
+
+            config.AddUserSecrets(Assembly.GetEntryAssembly())
+                  .AddEnvironmentVariables()
+                  .AddCommandLine(_args)
+            ;
+
+        }
+
+
 
         private async Task RunAsyncImpl(IHost host, CancellationToken token = default)
         {
@@ -391,6 +433,7 @@ namespace Bb.Servers.Web
             }
         }
 
+
         private void EnumerateListeners()
         {
 
@@ -405,6 +448,7 @@ namespace Bb.Servers.Web
 
         }
 
+
         /// <summary>
         /// return a <see cref="StringBuilder"/> with Concatenated url separated by ';'.
         /// </summary>
@@ -414,6 +458,7 @@ namespace Bb.Servers.Web
         {
             return ConcatUrl(new StringBuilder(), urls);
         }
+
 
         /// <summary>
         /// return a <see cref="StringBuilder"/> with Concatenated url separated by ';'.
@@ -438,15 +483,19 @@ namespace Bb.Servers.Web
 
         }
 
+
         private void Console_CancelKeyPress(object? sender, ConsoleCancelEventArgs e)
         {
             CancelAsync();
         }
 
+        public IEnumerable<Uri> Urls { get => _urls?.ToArray(); }
+
+
 
         private Task? _task;
         private Exception? _exception;
-        protected List<Uri>? _urls;
+        internal protected readonly List<Uri>? _urls = new List<Uri>();
         private readonly string[] _args;
         private readonly CancellationTokenSource _tokenSource;
         public readonly CancellationToken CancellationToken;
