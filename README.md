@@ -208,3 +208,65 @@ You can using the injection like that
     .Execute(uiService);
 
 ```
+
+
+
+# WebAssembly
+
+
+```ps
+    Install-Package Black.Beard.WebAssembly
+```
+
+
+In the program.cs you can use the following code
+```csharp
+
+
+    WebApplicationBuilder builder = WebApplication.CreateBuilder(args).Initialize(ConstantsCore.Initialization,
+    x =>
+    {
+        
+    });
+
+
+    WebApplication app = builder.Build().Initialize(ConstantsCore.Initialization, 
+    x =>
+    {
+        
+    });
+
+
+    app.Run();
+
+```
+
+
+```csharp
+
+
+    [ExposeClass(ConstantsCore.Initialization, ExposedType = typeof(IApplicationBuilderInitializer<WebApplicationBuilder>), LifeCycle = IocScopeEnum.Transiant)]
+    public class WebApplicationBuilderInitializer : ApplicationInitializerBase<WebApplicationBuilder>
+    {
+
+        public override void Execute(WebApplicationBuilder builder)
+        {
+            
+
+        }
+
+    }
+
+    [ExposeClass(ConstantsCore.Initialization, ExposedType = typeof(IApplicationBuilderInitializer<WebApplication>), LifeCycle = IocScopeEnum.Transiant)]
+    public class WebApplicationBuilderInitializer : ApplicationInitializerBase<WebApplication>
+    {
+
+        public override void Execute(WebApplication app)
+        {
+            
+
+        }
+
+    }
+
+```

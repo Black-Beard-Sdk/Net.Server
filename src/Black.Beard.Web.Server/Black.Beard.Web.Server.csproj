@@ -29,11 +29,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Black.Beard.ComponentModel" Version="1.0.86" />
-	  <PackageReference Include="Black.Beard.ComponentModel.Attributes" Version="1.0.86" />
-	  <PackageReference Include="Black.Beard.Helpers" Version="2.0.32" />
-	  <PackageReference Include="Black.Beard.Helpers.ContentLoaders" Version="2.0.32" />
-	  <PackageReference Include="Black.Beard.Helpers.ContentLoaders.Files" Version="2.0.32" />
+	  <PackageReference Include="Black.Beard.ComponentModel" Version="1.0.88" />
+	  <PackageReference Include="Black.Beard.ComponentModel.Attributes" Version="1.0.88" />
+	  <PackageReference Include="Black.Beard.Helpers" Version="2.0.35" />
+	  <PackageReference Include="Black.Beard.Helpers.ContentLoaders" Version="2.0.34" />
+	  <PackageReference Include="Black.Beard.Helpers.ContentLoaders.Files" Version="2.0.35" />
 		
 	  <PackageReference Include="NLog" Version="5.2.8" />
 	  <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.8" />

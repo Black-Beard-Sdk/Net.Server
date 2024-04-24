@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Éléments de solution", "�
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Black.Beard.WebAssembly", "Black.Beard.WebAssembly\Black.Beard.WebAssembly.csproj", "{702573DF-CA37-458B-BCC6-BE74E680F767}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{ECCA6F85-FA01-4BA5-AFA9-4E47FA28AB91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECCA6F85-FA01-4BA5-AFA9-4E47FA28AB91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECCA6F85-FA01-4BA5-AFA9-4E47FA28AB91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{702573DF-CA37-458B-BCC6-BE74E680F767}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{702573DF-CA37-458B-BCC6-BE74E680F767}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{702573DF-CA37-458B-BCC6-BE74E680F767}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{702573DF-CA37-458B-BCC6-BE74E680F767}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
