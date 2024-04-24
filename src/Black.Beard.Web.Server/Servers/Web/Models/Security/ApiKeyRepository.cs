@@ -1,4 +1,5 @@
-﻿using Bb.ComponentModel.Attributes;
+﻿using Bb.ComponentModel;
+using Bb.ComponentModel.Attributes;
 using Bb.Servers.Web.Models;
 using Microsoft.Extensions.Options;
 using System.Reflection;
@@ -6,7 +7,7 @@ using System.Reflection;
 namespace Bb.Servers.Web.Models.Security
 {
 
-    [ExposeClass(Context = Constants.Models.Service, ExposedType = typeof(IApiKeyRepository), LifeCycle = IocScopeEnum.Singleton)]
+    [ExposeClass(Context = ConstantsCore.Service, ExposedType = typeof(IApiKeyRepository), LifeCycle = IocScopeEnum.Singleton)]
     internal class ApiKeyRepository : IApiKeyRepository
     {
 

@@ -268,8 +268,8 @@ namespace Bb.Servers.Web
                 services.BindConfiguration(c, CurrentConfiguration);
             });
 
-            services.UseTypeExposedByAttribute(CurrentConfiguration, Constants.Models.Model)
-                    .UseTypeExposedByAttribute(CurrentConfiguration, Constants.Models.Service);
+            services.UseTypeExposedByAttribute(CurrentConfiguration, ConstantsCore.Model)
+                    .UseTypeExposedByAttribute(CurrentConfiguration, ConstantsCore.Service);
 
         }
 

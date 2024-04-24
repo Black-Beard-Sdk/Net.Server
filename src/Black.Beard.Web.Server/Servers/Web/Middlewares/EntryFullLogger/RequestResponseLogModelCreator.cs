@@ -1,10 +1,11 @@
-﻿using Bb.ComponentModel.Attributes;
+﻿using Bb.ComponentModel;
+using Bb.ComponentModel.Attributes;
 using Bb.Servers.Web.Models;
 
 namespace Bb.Servers.Web.Middlewares.EntryFullLogger
 {
 
-    [ExposeClass(Context = Constants.Models.Service, ExposedType = typeof(IRequestResponseLogModelCreator), LifeCycle = IocScopeEnum.Singleton)]
+    [ExposeClass(Context = ConstantsCore.Service, ExposedType = typeof(IRequestResponseLogModelCreator), LifeCycle = IocScopeEnum.Singleton)]
     public class RequestResponseLogModelCreator : IRequestResponseLogModelCreator
     {
 
