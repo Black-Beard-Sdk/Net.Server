@@ -46,9 +46,7 @@ namespace Bb.Servers.Web
                 RegisterServicesSwagger(services);
 
             if (Configuration.UseTelemetry)
-                RegisterTelemetry(services);
-
-            AppendServices(services);
+                RegisterTelemetry(services);         
 
             if (Configuration.UseControllers)
                 services.AddControllers(ConfigureControllers);
@@ -75,15 +73,6 @@ namespace Bb.Servers.Web
         /// </summary>
         /// <param name="options"></param>
         protected virtual void ConfigureControllers(MvcOptions options)
-        {
-
-        }
-
-        /// <summary>
-        /// Configures the custom services.
-        /// </summary>
-        /// <param name="services"></param>
-        public virtual void AppendServices(IServiceCollection services)
         {
 
         }
