@@ -29,14 +29,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Black.Beard.ComponentModel" Version="1.0.89" />
-	  <PackageReference Include="Black.Beard.ComponentModel.Attributes" Version="1.0.89" />
-	  <PackageReference Include="Black.Beard.Helpers" Version="2.0.35" />
-	  <PackageReference Include="Black.Beard.Helpers.ContentLoaders" Version="2.0.35" />
-	  <PackageReference Include="Black.Beard.Helpers.ContentLoaders.Files" Version="2.0.35" />
+	  <PackageReference Include="Black.Beard.ComponentModel" Version="1.0.93" />
+	  <PackageReference Include="Black.Beard.ComponentModel.Attributes" Version="1.0.93" />
+	  <PackageReference Include="Black.Beard.Helpers" Version="2.0.37" />
+	  <PackageReference Include="Black.Beard.Helpers.ContentLoaders" Version="2.0.37" />
+	  <PackageReference Include="Black.Beard.Helpers.ContentLoaders.Files" Version="2.0.37" />
 		
-	  <PackageReference Include="NLog" Version="5.2.8" />
-	  <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.8" />
+	  <PackageReference Include="NLog" Version="5.3.2" />
+	  <PackageReference Include="NLog.Web.AspNetCore" Version="5.3.10" />
 		
 	  <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.8.1" />
 	  <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.8.1" />
