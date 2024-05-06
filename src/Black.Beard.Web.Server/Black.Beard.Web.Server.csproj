@@ -29,8 +29,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Black.Beard.ComponentModel" Version="1.0.94" />
-	  <PackageReference Include="Black.Beard.ComponentModel.Attributes" Version="1.0.94" />
+	  <PackageReference Include="Black.Beard.ComponentModel" Version="1.0.95" />
+	  <PackageReference Include="Black.Beard.ComponentModel.Attributes" Version="1.0.95" />
 	  <PackageReference Include="Black.Beard.Helpers" Version="2.0.37" />
 	  <PackageReference Include="Black.Beard.Helpers.ContentLoaders" Version="2.0.37" />
 	  <PackageReference Include="Black.Beard.Helpers.ContentLoaders.Files" Version="2.0.37" />
